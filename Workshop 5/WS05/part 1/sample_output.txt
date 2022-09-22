@@ -1,0 +1,49 @@
+Command Line:
+---------------------------------------------
+  1: ws
+  2: processors.txt
+---------------------------------------------
+
+---------------------------------------------
+                  CPU SETUP
+---------------------------------------------
+**EXPECTED EXCEPTION: File cannot be opened.
+**EXPECTED EXCEPTION: Central Unit cannot be copy-assigned.
+CPU has 5 available units and has no jobs on setup.
+---------------------------------------------
+---------------------------------------------
+                  ADD JOBS
+---------------------------------------------
+Successfully added 4 jobs to the queue.
+**EXPECTED EXCEPTION: Job queue is full.
+---------------------------------------------
+---------------------------------------------
+                   RUN CPU
+---------------------------------------------
+CPU run #1
+Processed over quota for `Add a file` [00/01 remaining]
+CPU now has 2 available units and has some pending jobs after run #1.
+Queuing `Divide 2 integers` job
+
+CPU run # 2
+CPU now has 1 available units and has some pending jobs after run #2.
+
+CPU run # 3
+CPU now has 1 available units and has some pending jobs after run #3.
+
+CPU run # 4
+CPU now has 2 available units and has some pending jobs after run #4.
+
+CPU run # 5
+CPU now has 2 available units and has some pending jobs after run #5.
+
+CPU run # 6
+CPU now has 3 available units and has some pending jobs after run #6.
+
+CPU run # 7
+CPU now has 4 available units and has some pending jobs after run #7.
+
+CPU run # 8
+CPU now has 5 available units and has no jobs after run #8.
+
+---------------------------------------------

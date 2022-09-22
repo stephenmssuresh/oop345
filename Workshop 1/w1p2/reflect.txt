@@ -1,0 +1,88 @@
+/*
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 20/01/2022
+*/
+
+In this work shop I learned how to use external linkage (to create global variables), use static variables, and practiced allocating and deallocating memory dynamically on the heap.
+
+EXTERNAL VS INTERNAL LINKAGE
+EXTERNAL LINKAGE
+External linkage is the process of defining variables that can be used in different translation units (different cpp files/the whole program). For instance, a variable that is defined in the file1.cpp and file1.h translation unit can be accessed by file2.cpp translation unit.
+As an example, in my foodorder.h file I declared 2 variables with the keyword extern before them, specifying they have external linkage:
+extern double g_taxrate;
+extern double g_dailydiscount;
+
+It then needed another declaration to be used, which I did in the foodorder.cpp file:
+double g_taxrate;
+double g_dailydiscount;
+
+These variables were then modified in the main function, w1_p2.cpp. Since they are externally linked, the variables now have the values assigned to them in this function:
+if (day == 1){
+	g_taxrate = 0.13;
+	g_dailydiscount = 1.15;
+}
+
+When calling the display function in foodorder.cpp, due to having external linkage, the display function is able to compile a statement like this:
+cout << (foodPrice * (1 + g_taxrate)) - g_dailydiscount;
+
+
+INTERNAL LINKAGE
+A variable that has internal linkage can be accessed throughout the entire translation unit, but not across different translation units like those with external linkage. This means that every function in the cpp file can access this variable.
+
+In my code, I used a static variable to specify the maximum string length for reading a string:
+const static int MAX_DESC_LEN = 50; //set max length for reading a foodDesc string in read()
+
+Although this value could have been specified normally inside the function since it was only used in that function, I defined it this way with internal linkage so I could put it at the top of the file where it could be easily changed if so desired, without having to look through the function first.
+
+STATIC VARIABLES
+The static keyword was used to create a variable with internal linkage in the line of code above. It can also be used to create a variable that has a lifetime that exceeds the scope of the function it is in. For instance, in my read function I have a static variable counter, which counts how many times the function has been called, and is used to display the number of the order entry on the screen:
+void FoodOrder::display() {
+		static int counter = 0;
+		counter++;
+		
+		cout.width(2);
+		cout.setf(ios::left);
+		cout << counter;
+
+In this code, counter initially has a value of 0, then is incremented up to become 1. When the function is exited, the next time it is called, counter still has a value of 1, and is now going to be incremented to a value of 2.
+
+
+CHANGES MADE TO UPGRADE FOODORDER CLASS TO ALLOW DYNAMIC MEMORY ALLOCATION
+In part 2 of the workshop, to allow dynamic memory allocation without changing the main function, I had to modify the foodOrder class to have:
+
+1. A destructor that deallocates the memory:
+FoodOrder::~FoodOrder() {
+	delete[] foodDesc;
+	foodDesc = nullptr;
+}
+
+This function is called whenever a FoodOrder object goes out of scope. I created this so objects created in a block within the main function would automatically deallocate the memory they use when they go out of scope, such as in these lines(:
+if (ordertag == 'I') {
+	sdds::FoodOrder copy = currentOrder; //need destructor for copy
+	copy.display(); 
+} 
+
+2. An overloaded assignment operator:
+FoodOrder& operator=(FoodOrder& source);
+
+I created this because the assignment operator is used on an object that stores a value before either displaying it through a temporary FoodOrder object or pushing it into an array of FoodOrder objects. Without this operator overload, the pointer foodDesc, the dynamically allocated variable in the class, would be copied directly. This means that the value it stored would be deleted in the recordedDeliveryOrders array:
+recordedDeliveryOrders[numDeliveries++] = currentOrder;
+
+without this overload, this arrays foodDesc would be the same value as the currentOrder, and when the foodDesc in currentOrder is deallocated to store a new value (as in the read function), the foodDesc in the array entry would be lost.
+read function lines
+delete[] foodDesc;
+foodDesc = nullptr;
+foodDesc = new char[strlen(descTemp) + 1];
+strcpy(foodDesc, descTemp);
+
+These code lines are there to deallocate the foodDesc value in currentOrder and assign it a new value
+
+3. Copy constructor:
+FoodOrder(const FoodOrder& source);
+
+This copy constructor is used to follow the rule of 3. I am not entirely sure why this constructor is necessary since it is not called anywhere in the program. I was having trouble with my program when I just had the copy assignment operator and the destructor and then I read about the rule of three online and when I wrote a copy constructor into the code it worked.
+
+

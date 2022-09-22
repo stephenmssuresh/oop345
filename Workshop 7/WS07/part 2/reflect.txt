@@ -1,0 +1,73 @@
+File: reflet.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 19/03/2022
+
+
+Workshop 7 Reflection
+
+In this workshop I use the algorithm and numeric libraries to manipulate, query and modify data in a sequential container, in this case, a vector.
+
+I used the any_of, sort, for_each, copy, copy_if and remove_if algorithms in the algorithm library to write functions that could extract meaninful data from the large covid dataset.
+
+In the cleanList() function, I used transform, passing the range of the vector that represented the CovidCollection, and passing the beginning of the same vector. I think I could have used a for_each algorithm instead but I already used it in the display() function. Inside the lambda, I created a temporary Covid object to return, and changed the value if "[None]" was the variant name before returning:
+        std::transform(this->covidCol.begin(), this->covidCol.end(), this->covidCol.begin(), [&](Covid &i)
+                      {  Covid retvalue(i.country, i.city, i.variant, i.numberOfCases, i.year, i.m_deaths);
+                          if(i.variant == "[None]") retvalue.variant = ""; 
+                      return retvalue; });
+
+
+In the display() function, I used for_each to print out each of the elements in the vector data member of CovidCollection and added the m_deaths variable and numberOfCases variable to local variables in the function (initialized to 0) to get the totals for deaths and cases. Maybe I could have used accumulate to do the same thing.:
+        size_t totalCases = 0;
+        size_t totalDeaths = 0;
+        std::for_each(this->covidCol.begin(), this->covidCol.end(), [&](Covid i)
+                      { std::cout << i << std::endl; 
+                  totalCases += i.numberOfCases; 
+                  totalDeaths += i.m_deaths; 
+                 });
+
+
+In the inCollection() function, I used the any_of and passed a check to see if the variant data member of the element was equal to the string that was passed to it:
+        return (std::any_of(this->covidCol.begin(), this->covidCol.end(), [&](Covid i)
+                            { return i.variant == variantName; }));
+
+
+In the getListForCountry() function, I created a list to return of the same size as the vector it was copying, copied all the elemnents of the vector using the copy algorithm, and then used remove_if and erase() to remove all the elements that did not match the country in the list before returning it:
+        std::list<Covid> copyList(this->covidCol.size());
+        std::copy(this->covidCol.begin(), this->covidCol.end(), copyList.begin());
+        copyList.erase(std::remove_if(std::begin(copyList), std::end(copyList), [=](Covid &i)
+                                      { return i.country == countryName; }),
+                       std::end(copyList));
+        return copyList;
+
+
+
+In the getListForVariant() function, I created a list to return of the same size as the vector it was copying, copied all the elements of the vector that had the variant name that was the same as the argument passed to it, and then used remove_if and erase() to remove all the empty elements in the list before returning it:
+        std::list<Covid> copyList(this->covidCol.size());
+        std::copy_if(this->covidCol.begin(), this->covidCol.end(), copyList.begin(), [=](Covid i)
+                     { return (i.variant == variantName); });
+        copyList.erase(std::remove_if(std::begin(copyList), std::end(copyList), [](Covid &i)
+                                      { return i.country.empty(); }),
+                       std::end(copyList));
+        return copyList;
+
+
+In the sort() function, I used the sort algorithm to sort the elements of the vector for a given column. The column to be sorted was done with if-else blocks which called the sort algorithm based on the string parameter passed to it, but maybe it would have been better to put the if-else blocks inside the comparator labmda passed to the sort algorithm. Although putting the if-else blocks outside the lambda ensured that I was able to write an else statement for any string passed not matching any of the column names that displayed an error message. Perhaps throwing an exception instead of displaying anything would be a better way to handle invalid inputs to the sort() function:
+        if (field == "country")
+        {
+            std::sort(this->covidCol.begin(), this->covidCol.end(), [=](Covid &val1, Covid &val2)
+                      { return val1.country < val2.country; });
+        }
+
+Alternatively:
+        std::sort(this->covidCol.begin(), this->covidCol.end(), [=](Covid &val1, Covid &val2)
+                  { if(field == "country") return val1.country < val2.country;
+                  else if (field == "variant") return val1.variant < val2.variant...
+			...
+			... });
+
+
+
+Using the algorithms was much easier and more readable than using loops and iterators for each of the functions. The only difficult part was figuring out the syntax of the lambda passed to the algorithm in some cases, as sometimes after compiling it would give error messages that I did not understand like "ill-formed argument".
+

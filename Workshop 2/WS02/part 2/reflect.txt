@@ -1,0 +1,80 @@
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 29/01/2022
+
+In this workshop, I got more practice reading from a file and translating the data from the file to data structures in my program that were dynamically allocated memory. I did this by counting the records in the file that I needed to work with before dynamically allocating string arrays in my program.
+For example, to count the number of records in the file, I had to count the records that were delimited by a one line description that started with a '>', using the following code:
+            while(fin){
+                fin.ignore(200, '\n');
+                fin.ignore(20000, '>');
+                noOfProteins++;
+            }
+
+I also had to record the string records into my array, which meant having to check for eof and the character that started the description, using the following code:
+	while(fin && counter < noOfProteins){
+                //fin.get(character);
+                if(!fin.get(character).eof()){
+                    if (character != '>'){
+                    //https://www.codeproject.com/Questions/865342/Displaying-an-extra-character-problem-while-readin
+                    proteins[counter].push_back(character);
+                    getline(fin, tempstring, '\n');
+                    proteins[counter].append(tempstring);
+                    }
+                    else{
+                    fin.ignore(300,'\n');
+                    counter++;
+                    }
+                }
+            
+            }
+
+
+I also implemented the std::chrono library to measure time taken to run parts of the program and print it out in nanoseconds. For this I had to measure the time taken using the steady_clock, and get it as a long long int type before printing it out.
+	from addTask:
+	taskList[noOfRecords].taskDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(abs(startTime - endTime));
+
+	from << overload:
+	os << tasks.taskList[i].taskDuration.count(); //https://www.geeksforgeeks.org/chrono-in-c/
+        os << " " << tasks.taskList[i].timeUnit << endl;
+        os.unsetf(ios::right);
+
+
+In this workshop, I implemented copy and move constructors and assignment operators as well as a destructor to follow the rule of 5, and then obtained the time taken for each of these functions to execute. The results are as follows:
+--------------------------
+Execution Times:
+--------------------------
+  0-arg Constructor          400000 nanoseconds
+  1-arg Constructor      2246937617 nanoseconds
+  Copy Constructor        132293942 nanoseconds
+  Copy Assignment         133870643 nanoseconds
+  Move Constructor          1146700 nanoseconds
+  Move Assignment            575000 nanoseconds
+  Destructor              174953956 nanoseconds
+--------------------------
+
+As shown above, the copy constructor and assignment operator take much longer to complete execution than the move constructor and assignment operator. This is because the move functions only deallocate the destination memory, shallow copy a pointer(an array), which is a few bytes, along with the static variables and then deallocates the memory assigned to the source, as shown by the code for the move assignment operator below:
+ ProteinDatabase& ProteinDatabase::operator=(ProteinDatabase&& source) noexcept{
+        if(this != &source){
+            delete[] proteins;
+            proteins = source.proteins;
+            source.proteins = nullptr;
+            noOfProteins = source.noOfProteins;
+            source.noOfProteins = 0;
+        }
+        return *this;
+    }
+
+On the other hand, the copy functions involve deallocating and allocating memory, interating through a potentially large array and copying each value the source to the destination,  as shown by the code for the copy assignment operator below:
+    ProteinDatabase& ProteinDatabase::operator=(const ProteinDatabase& source){
+        if(this != &source){
+            noOfProteins = source.noOfProteins;
+            delete[] proteins;
+            proteins = new string[noOfProteins];
+            for (auto i = 0; i < noOfProteins; i++){
+                proteins[i] = source.proteins[i];
+            }
+        }
+        return *this;
+    }

@@ -1,0 +1,41 @@
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 27/02/2022
+
+1. Identify which components of your solution are the observers, subjects, and the events per the observer pattern. You can read online about the Observer Pattern. Justify your answer!
+
+In this workshop, the subject is the CentralUnit class, and the observer is the 
+Processor class. The CentralUnit class has a list of Processors inside it. It is a sort of 'interface' that calls on the functions in the Processor objects inside it based on what the main function wants the CentralUnit to do.
+
+For instance, the run() function of the CentralUnit class is called in the main function, which in turn calls on the overloaded () operator function in each of the Processor objects in a list of Processors it stores as an array.
+
+
+
+
+2. Why did we need to use an std::function object? What are the pros and cons of using it (mention at least 1 of each)?
+
+std::function types allow you to store function-like objects in C++. In the workshop, we needed to use an std::function object to pass a lambda function to Processor objects. This is a much easier implementation than writing a function that accepts a function pointer and then writing another function to pass as an argument. We could not pass functors or lambdas, which are function objects without using std::function.
+
+Since std::function are templates, they end up taking more memory and longer times to compile and load.
+
+
+
+
+3. How can C++ templates be used instead of an std::function object to store a function?
+A C++ template base class can be created, with inherited classes for function pointers and function objects. Then, overloaded operators could work depending on what the dynamic type of the object is. This way you can store objects of the base class type in a container like an array.
+
+
+
+
+4. Your code reports and handles different types of exceptions. How would you modify your code to only report exceptions of the same data type and handle them appropriately? How would you differentiate between the different exceptions in this case?
+I would modify my code to only throw exceptions derived from std::exception like std::logic_error or std::under_flow, which was used in this workshop. In the Processor module, the overloaded () operator would catch an underflow error if the power of the processor was higher than the amount of work units left on the job it was working on. In my implementation, the catch block begins like this:
+catch(std::underflow_error& err)
+
+I would then change it to this, which is a parent class and accepts errors of different types (like std::range_error or std::out_of_range etc.)
+catch(std::exception& err)
+
+To differentiate between the different exceptions, I would "pass the error type" as a string like std::exception types do.
+Ex:
+throw std::underflow_error("std::under_flow error....more info if needed");

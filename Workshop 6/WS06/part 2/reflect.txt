@@ -1,0 +1,46 @@
+/*
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 12/03/2022
+*/
+
+In this workshop I learned how to use the vector container and iterators to access elements within the container. I also got more practice with the string library and exception handling. I used the vector to store polymorphic objects and also used recursive functions.
+
+Why do you need to deallocate the dynamically allocated memory in your vector of resources?
+Since the vector m_contents stored pointers to Resource objects that were dynamically allocated at runtime, I had to deallocate them before removing the objects they were pointed to from the vector (using iterator function erase()), as erase() would not deallocate the memory pointed to by the pointers and only deallocate the memory used by the vector elements. For instance, in the Directory::remove() function, to remove a file object from the m_contents vector:
+        else if (res->type() == NodeType::FILE) {
+            bool keepgoing = true;
+            for(auto it = m_contents.begin(); it != m_contents.end() && keepgoing; it++){
+                if((*it)->name() == name){
+                    delete (*it);
+                    m_contents.erase(it);
+                    keepgoing = false;
+                }
+            }
+        }
+
+When calling the destructor of the Directory class, the memory stored in each element of the vector must be deallocated, although I am unsure of the specific order in which the destructor is called for each element in the directory tree:
+    Directory::~Directory(){
+        while(!m_contents.empty()){
+            delete m_contents.back();
+            m_contents.pop_back();
+        }
+    }
+
+
+
+To call specific functions for a Directory objects stored in a Resource*, what special C++ operation did you have to do and why?
+To call the find() function in a Directory object, on a Directory object it is storing in the m_contents vector, the dynamic_cast operetor must be used to convert the Resource pointer to a Directory pointer. This is because the C++ compiler does not know the dynamic type of the pointer stored in the vector at compile time. A flag was used on each Resource object to check if the object was a Directory or a File, and dynamic_cast<Directory*> was only used when the object was sure to be a Directory pointer. For instance, since find can only be called on a Directory object, and the find() function is used recursively to check through the Directory tree, dynamic_cast was used (looping through all the elements in the m_contents vector):
+
+            if(recursiveFind && resource->type() == NodeType::DIR){
+                Resource* r = dynamic_cast<Directory*>(resource)->find(name, flags);
+                if(r != nullptr) return r;
+            }
+
+
+
+
+In this workshop you had to use std::vector<sdds::Resource*> to store a collection of filesystem resources as pointers. Could you have used std::vector<sdds::Resource> instead? Justify your answer!
+No. If vectors were used to store Resource objects instead of pointers to Resource objects, we would not be able to store both File and Directory objects in the same vector since they are different types. But if the vector stored Resource pointers it could store both File and Directory objects because they are both part of the Resource hierarchy.

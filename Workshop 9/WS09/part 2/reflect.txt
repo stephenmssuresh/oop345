@@ -1,0 +1,19 @@
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 03/04/2022
+
+
+In this workshop, I wrote a function that used threads, read and wrote to binary files and bound arguments to functions. 
+
+Writing and reading to binary files was a little tricky since I had to use reinterpret_cast to cast an int type variable to a char variable to use the read() and write() functions. While I am not completely sure that there was any benefit to using binary files here, perhaps binary files are better when there are large amounts of data to be read or written since you do not have to worry about writing code for the field and record delimiters.
+
+Function binding was used in this workshop. It simplified the coding when writing arguments to be passed to the thread functions. I am not sure of the bind() function beyond this. 
+
+In parts of the program where multiple threads were used, the time taken to complete that part of the program was considerably less than the parts where no threads were used. For instance, when using 2 threads, the time taken to compute the average and variance was more than double the time taken than when 4 threads were used.
+
+I also ran a small experiment where I used the sleep_for() function and saw how it affected the time taken for different parts of the program, with different numbers of threads, to finish running. Due to the complexity of the program, featuring many nested for loops in some parts of the code, a pause of a few nanoseconds increased the time taken for the program to complete exponentially. Adding even a 1 nanosecond pause increased the time taken for the part of the program using 4 threads by almost 20 times. The advantages that come with using threads was reduced because of the complexity.
+
+
+

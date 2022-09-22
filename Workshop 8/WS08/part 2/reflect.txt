@@ -1,0 +1,55 @@
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 26/03/2022
+
+In this workshop, I learned about the differences between raw and smart pointers, wrote versions of the same functions that used raw and smart pointers, and wrote functions of quadratic complexity.
+
+The functions that had quadratic complexity were the writeRaw() and writeSmart() functions:
+GeneratingList<EmployeeWage> writeSmart(const GeneratingList<Employee> &emp, const GeneratingList<Salary> &sal)
+	{
+		GeneratingList<EmployeeWage> activeEmp;
+		// TODO: Add your code here to build a list of employees
+		//         using smart pointers
+		for (size_t i = 0; i < emp.size(); i++)
+		{ // loop though emp then loop through sal to compare id
+			for (size_t j = 0; j < sal.size(); j++)
+			{
+				if (sal[j].id == emp[i].id)
+				{
+					if (!emp.sinValidation(emp[i].id))
+					{...
+					 ...
+
+In these functions, a container was iterated through using a for loop, and another container was iterated within the for loop. This means that the time taken to iterate through the containers has a quadtratic relationship with the number of elements in the container, because if an element is added to any of the containers, it is like iterating through the container one more time(?).
+
+
+
+writeRaw() and writeSmart() were also two different functions that accomplished the same thing, with writeRaw() using raw pointers in its implementation and writeSmart() using smart pointers in its implementation. In both functions, a pointer to an EmployeeWage object was created and pushed into the container stored in the activeEmp object. In writeSmart(), the code was much shorter, more readable, and no memory needed to be deallocated as it was all done automatically by the unique_ptr object:
+
+// create new EmployeeWage object to validate before adding stored in a std::nique_ptr
+std::unique_ptr<EmployeeWage> newEmp(new EmployeeWage(emp[i].name, sal[j].salary));
+//validation
+activeEmp += std::move(newEmp);
+
+
+While in the writeRaw() function, memory had to be deallocated after it was used or during errors in validation to prevent memory leaks:
+
+EmployeeWage *newEmp = new EmployeeWage(emp[i].name, sal[j].salary);
+		// validate salary using rangeValidator()
+		try
+		{
+			newEmp->rangeValidator();
+			activeEmp += newEmp;
+			delete newEmp; // delete after moving the resource to activeEmp
+		}
+		catch (const std::string except)
+		{
+			delete newEmp; // deallocate if invalid salary
+			throw except;
+		}
+
+
+
+

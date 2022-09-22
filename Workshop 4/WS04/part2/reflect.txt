@@ -1,0 +1,38 @@
+/*
+File: reflect.txt
+Name: Stephen Suresh
+Student ID: 117916213
+Email: ssuresh15@myseneca.ca
+Date completed : 13/02/2022
+
+I have done all the coding by myself and only copied the code that my professor provided to complete my workshopsand assignments
+*/
+
+Child is a composition. It manages an array of toys, creating it once it is passed to its constructor and deleting it once the destructor is called. It allocates each individual element in the array for a toy object in the constructor, and deletes each one in the destructor.
+
+Constructor:
+     Child::Child(std::string name, int age, const Toy* toys[], size_t count) {
+        this->Cname = name;
+        this->Cage = age;
+        this->count = count;
+        toyArr = new const Toy*[count];
+        for(auto i = 0u; i < count; i++){
+            if(toys[i] != nullptr){
+                toyArr[i] = new Toy(*toys[i]);
+            }
+        }
+     }
+
+Destructor:
+    Child::~Child(){
+        for (auto i = 0u; i < count; i++){
+            delete toyArr[i];
+            toyArr[i] = nullptr;
+        }
+        delete[] toyArr;
+        toyArr = nullptr;
+    }
+
+ConfirmOrder on the other hand, is an aggregation. It does not manage the life of the array of toys except internally during assignment.
+
+I had a lot of trouble with this workshop with regards to managing memory. I knew I had to delete the created objects inside the toy arrays in the Child class, but I was getting memory leaks anyways. I am not completely sure as to how I managed to make it go away, but I did.
